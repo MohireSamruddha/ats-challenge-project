@@ -136,37 +136,116 @@ export class CVAgent {
   }
 
   async reformatCV(cvContent: string): Promise<string> {
-    const prompt = `Reformat this CV HTML to have a consistent, professional layout while preserving the existing HTML structure. 
-    
+    const prompt = `Reformat this CV HTML into a clean, professional layout:
+
     ${cvContent}
 
     Requirements:
-    1. Preserve all existing HTML tags and their structure exactly
-    2. Keep all div positions and styling attributes intact
-    3. Only modify text content organization within existing elements
-    4. Maintain all PDF-specific positioning (left, top, etc.)
-    5. Add semantic structure only within existing elements
-    6. Keep all content and meaning intact
-    7. Return the complete HTML with structure preserved`;
+    1. Structure the content with clear sections:
+       - WORK HISTORY/EXPERIENCE (with dates right-aligned)
+       - CAREER OBJECTIVE/SUMMARY
+       - KEY SKILLS
+       - EDUCATION
+       - CERTIFICATIONS (if any)
+
+    2. Formatting rules:
+       - Use consistent heading styles (<h2> for main sections)
+       - Create proper spacing between sections (margin-bottom: 1.5em)
+       - Align dates to the right using <span class="date">
+       - Use bullet points for skills and experiences
+       - Maintain clean paragraph spacing
+       - Ensure job titles and companies are bold
+
+    3. HTML structure:
+       - Wrap each section in <section class="cv-section">
+       - Use <ul> and <li> for lists
+       - Use <p> for paragraphs
+       - Add appropriate class names for styling
+
+    4. Example structure:
+       <section class="cv-section">
+         <h2>WORK HISTORY</h2>
+         <div class="job-entry">
+           <div class="job-header">
+             <strong>Job Title</strong>
+             <span class="date">2022-2023</span>
+           </div>
+           <ul class="job-details">
+             <li>Achievement or responsibility</li>
+           </ul>
+         </div>
+       </section>
+
+    5. Critical requirements:
+       - Preserve all content exactly as is
+       - Maintain any existing styling attributes
+       - Keep all positioning information intact
+       - Only reorganize the structure within elements
+
+    Return the complete HTML with improved formatting and structure.`;
 
     return this.getCompletion(prompt);
   }
 
   async enhanceCV(cvContent: string): Promise<string> {
-    const prompt = `Enhance this CV's language while strictly preserving HTML structure and positioning. 
+    const prompt = `Enhance this CV's content while maintaining exact structure:
 
     ${cvContent}
 
     Requirements:
-    1. Keep all HTML tags and attributes exactly as they are
-    2. Preserve all positioning and styling attributes
-    3. Maintain PDF layout and structure
-    4. Only modify the text content within existing elements
-    5. Use active voice and professional language
-    6. Keep all dates and facts unchanged
-    7. Return the complete HTML with structure preserved`;
+    1. Use strong action verbs
+    2. Quantify achievements where possible
+    3. Maintain professional tone
+    4. Keep all HTML tags and attributes unchanged
+    5. Preserve all positioning and styling
+    6. Only modify text content within elements
+    7.Return the enhanced CV content with improved language and quantified achievements.
+    8. Focus on:
+       - Clear accomplishments
+       - Technical skills
+       - Professional experience
+       - Educational background
+    9. Return complete HTML with enhanced content`;
 
     return this.getCompletion(prompt);
+  }
+
+  private getFormattingCSS(): string {
+    return `
+      <style>
+        .cv-section {
+          margin-bottom: 1.5em;
+        }
+        .cv-section h2 {
+          font-size: 1.2em;
+          font-weight: bold;
+          margin-bottom: 1em;
+          border-bottom: 1px solid #ccc;
+        }
+        .job-entry {
+          margin-bottom: 1em;
+        }
+        .job-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5em;
+        }
+        .date {
+          color: #666;
+        }
+        .job-details {
+          margin-left: 1.5em;
+        }
+        ul {
+          list-style-type: disc;
+          margin-left: 1.2em;
+        }
+        li {
+          margin-bottom: 0.3em;
+        }
+      </style>
+    `;
   }
 
   async processCVWithSteps(cvContent: string): Promise<{
@@ -178,8 +257,9 @@ export class CVAgent {
     // Step 1: Anonymize
     const anonymizedContent = await this.anonymizeLastNames(cvContent);
     
-    // Step 2: Reformat
-    const formattedContent = await this.reformatCV(anonymizedContent);
+    // Step 2: Reformat and add CSS
+    let formattedContent = await this.reformatCV(anonymizedContent);
+    formattedContent = this.getFormattingCSS() + formattedContent;
     
     // Step 3: Enhance
     const enhancedContent = await this.enhanceCV(formattedContent);
