@@ -29,8 +29,11 @@ export class CVParser {
   }
 
   private async parseDocx(file: File) {
-    // Implement DOCX parsing logic
-    // You might want to use mammoth.js or similar library
+    const buffer = await file.arrayBuffer();
+    const [textResult, htmlResult] = await Promise.all([
+      mammoth.extractRawText({ arrayBuffer: buffer }),  // Gets plain text
+      mammoth.convertToHtml({ arrayBuffer: buffer })    // Gets HTML
+    ]);
   }
 
   static async parseFile(file: File): Promise<ParsedCV> {
@@ -157,40 +160,45 @@ export class CVParser {
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const content = await page.getTextContent();
+      const viewport = page.getViewport({ scale: 1.0 });
       
-      // Add page wrapper for better structure
-      html += `<div class="pdf-page" data-page="${i}">`;
-      originalHtml += `<div class="pdf-page" data-page="${i}">`;
+      // Add page wrapper with proper styling
+      html += `<div class="pdf-page" style="position: relative; width: ${viewport.width}px; height: ${viewport.height}px;" data-page="${i}">`;
+      originalHtml += `<div class="pdf-page" style="position: relative; width: ${viewport.width}px; height: ${viewport.height}px;" data-page="${i}">`;
       
       let lastY: number | null = null;
       let currentParagraph = '';
       let currentOriginalParagraph = '';
 
-      // Process each text item
+      // Process each text item with positioning
       content.items
         .filter((item): item is TextItem => 'str' in item)
         .forEach((item) => {
+          const [, , , , x, y] = item.transform;
           text += item.str + ' ';
           
+          // Create positioned text elements
+          const textElement = `<span style="position: absolute; left: ${x}px; top: ${viewport.height - y}px; font-size: ${item.height}px;">${item.str}</span>`;
+          
           // Check if we need to start a new paragraph based on Y position
-          if (lastY !== null && Math.abs(lastY - item.transform[5]) > 5) {
+          if (lastY !== null && Math.abs(lastY - y) > 5) {
             if (currentParagraph.trim()) {
-              html += `<p>${currentParagraph.trim()}</p>`;
-              originalHtml += `<p>${currentOriginalParagraph.trim()}</p>`;
+              html += `<div class="pdf-line" style="position: relative;">${currentParagraph.trim()}</div>`;
+              originalHtml += `<div class="pdf-line" style="position: relative;">${currentOriginalParagraph.trim()}</div>`;
               currentParagraph = '';
               currentOriginalParagraph = '';
             }
           }
           
-          currentParagraph += item.str + ' ';
-          currentOriginalParagraph += item.str + ' ';
-          lastY = item.transform[5];
+          currentParagraph += textElement;
+          currentOriginalParagraph += textElement;
+          lastY = y;
         });
 
       // Add any remaining paragraph
       if (currentParagraph.trim()) {
-        html += `<p>${currentParagraph.trim()}</p>`;
-        originalHtml += `<p>${currentOriginalParagraph.trim()}</p>`;
+        html += `<div class="pdf-line" style="position: relative;">${currentParagraph.trim()}</div>`;
+        originalHtml += `<div class="pdf-line" style="position: relative;">${currentOriginalParagraph.trim()}</div>`;
       }
 
       html += '</div>'; // Close page div
