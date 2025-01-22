@@ -11,6 +11,8 @@ import {
 import { CVParser } from "@/services/CVParser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
+import { CVAgent } from "@/services/AgentService";
+import { toast } from "sonner";
 
 interface ParsedResult {
   content: string;
@@ -44,13 +46,29 @@ export default function Home() {
     setError(null);
 
     try {
+      // First parse the CV
       const parser = new CVParser();
-      const result = await parser.parse(file);
-      console.log('Parsed CV Result:', result);
-      setParsedCV(result);
+      const initialParsed = await parser.parse(file);
+      
+      // Initialize the CV Agent
+      const agent = new CVAgent();
+      
+      // Process the CV with agent steps
+      const processedResult = await agent.processCVWithSteps(initialParsed.content);
+      
+      // Update the parsed result with anonymized content
+      setParsedCV({
+        ...initialParsed,
+        content: processedResult.finalCV,
+        html: processedResult.finalCV, // You might want to convert this to HTML
+        firstName: initialParsed.firstName
+      });
+
+      toast.success("CV processed successfully!");
     } catch (error) {
       console.error('Error processing CV:', error);
       setError('Failed to process the CV. Please try again.');
+      toast.error("Failed to process CV");
     } finally {
       setIsProcessing(false);
     }
@@ -93,7 +111,14 @@ export default function Home() {
                 disabled={isProcessing}
                 className="mt-2"
               >
-                {isProcessing ? "Processing..." : "Process CV"}
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  "Process CV"
+                )}
               </Button>
             </>
           )}
