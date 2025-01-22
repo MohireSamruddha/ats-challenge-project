@@ -16,24 +16,12 @@ export class CVAgent {
     // Initialize with system message defining the agent's capabilities
     this.conversation.push({
       role: "system",
-      content: `Expert CV processor. Format CV sections:
-      1. Professional Summary (3-4 sentences)
-      2. Skills (Technical, Soft)
-      3. Experience (reverse chronological)
-      4. Education
-      5. Optional: Certifications, Projects, Awards
-
-      Format rules:
-      - Clear headings
-      - Experience: company, title, dates, 3-5 bullet points
-      - Skills: categorized
-      - Education: institution, degree, date
-      - Use action verbs
-      - Quantify achievements
-      - Industry keywords
-      - Professional tone
-      - Clear spacing
-      - No personal info`
+      content: `Expert CV anonymizer. Task:
+- Remove only last names while preserving first names
+- Preserve all other content and formatting
+- Keep HTML structure intact
+- Do not modify any other personal information
+- Do not reformat or restructure content`
     });
   }
 
@@ -56,8 +44,8 @@ export class CVAgent {
           content: step.content
         })),
         model: "gpt-4o-mini",
-        temperature: 0.7,
-        max_tokens: 4000
+        temperature: 0.1,
+        max_tokens: 16000
       });
 
       const response = completion.choices[0].message.content || "";
@@ -121,101 +109,29 @@ export class CVAgent {
     return chunks;
   }
 
-  async analyzeStructure(cvContent: string): Promise<string> {
-    const prompt = `Analyze CV structure:
+  async anonymizeLastNames(cvContent: string): Promise<string> {
+    const prompt = `Remove ONLY last names from this CV, preserving all HTML formatting and other content exactly as is. Keep first names intact:
     ${cvContent}
 
-    List:
-    1. Current sections
-    2. Missing sections
-    3. Format issues
-    4. Enhancement areas`;
-    
-    return this.getCompletion(prompt);
-  }
-
-  async identifyPersonalInfo(cvContent: string): Promise<string> {
-    const prompt = `Find personal info to anonymize:
-    ${cvContent}
-
-    List:
-    1. Personal details found
-    2. Suggested replacements
-    3. Hidden personal info`;
-    
-    return this.getCompletion(prompt);
-  }
-
-  async enhanceContent(cvContent: string): Promise<string> {
-    const prompt = `Enhance CV:
-    ${cvContent}
-
-    Make:
-    1. Strong summary
-    2. Categorized skills
-    3. Quantified achievements
-    4. Technical details
-    5. Clear format`;
-
-    return this.getCompletion(prompt);
-  }
-
-  async planReformatting(cvContent: string, structureAnalysis: string): Promise<string> {
-    const prompt = `Analysis: ${structureAnalysis}
-    CV: ${cvContent}
-
-    Plan reformatting:
-    1. Section order
-    2. Content structure
-    3. Format fixes
-    4. Enhancements needed`;
-    
-    return this.getCompletion(prompt);
-  }
-
-  async executeChanges(
-    cvContent: string, 
-    personalInfo: string, 
-    reformatPlan: string
-  ): Promise<string> {
-    const prompt = `Transform CV:
-    - Anonymize: ${personalInfo}
-    - Format: ${reformatPlan}
-    - Content: ${cvContent}
-
-    Use:
-    1. # for sections
-    2. * for bullets
-    3. Action verbs
-    4. Metrics
-    5. Keywords`;
+    Rules:
+    1. Only remove last names
+    2. Keep first names
+    3. Preserve all HTML tags and structure
+    4. Don't modify any other content
+    5. Don't change formatting`;
     
     return this.getCompletion(prompt);
   }
 
   async processCVWithSteps(cvContent: string): Promise<{
-    structureAnalysis: string;
-    personalInfo: string;
-    reformatPlan: string;
-    finalCV: string;
+    originalContent: string;
+    anonymizedContent: string;
   }> {
-    // Step 1: Analyze Structure
-    const structureAnalysis = await this.analyzeStructure(cvContent);
-    
-    // Step 2: Identify Personal Information
-    const personalInfo = await this.identifyPersonalInfo(cvContent);
-    
-    // Step 3: Plan Reformatting
-    const reformatPlan = await this.planReformatting(cvContent, structureAnalysis);
-    
-    // Step 4: Execute Changes with Enhanced Content
-    const finalCV = await this.executeChanges(cvContent, personalInfo, reformatPlan);
+    const anonymizedContent = await this.anonymizeLastNames(cvContent);
     
     return {
-      structureAnalysis,
-      personalInfo,
-      reformatPlan,
-      finalCV
+      originalContent: cvContent,
+      anonymizedContent
     };
   }
 } 

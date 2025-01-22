@@ -54,13 +54,13 @@ export default function Home() {
       const agent = new CVAgent();
       
       // Process the CV with agent steps
-      const processedResult = await agent.processCVWithSteps(initialParsed.content);
+      const processedResult = await agent.processCVWithSteps(initialParsed.html);
       
       // Update the parsed result with anonymized content
       setParsedCV({
         ...initialParsed,
-        content: processedResult.finalCV,
-        html: processedResult.finalCV, // You might want to convert this to HTML
+        content: processedResult.anonymizedContent,
+        html: processedResult.anonymizedContent,
         firstName: initialParsed.firstName
       });
 
