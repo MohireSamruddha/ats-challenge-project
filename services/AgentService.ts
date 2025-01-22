@@ -33,7 +33,9 @@ export class CVAgent {
 - Strengthen impact of achievements
 - Use active voice
 - Maintain professional tone
-- Keep factual content unchanged`
+- Keep factual content unchanged
+
+  Do not include any explanatory text in your response - return only the processed HTML.`
     });
   }
 
