@@ -16,12 +16,24 @@ export class CVAgent {
     // Initialize with system message defining the agent's capabilities
     this.conversation.push({
       role: "system",
-      content: `Expert CV anonymizer. Task:
+      content: `Expert CV processor with multiple capabilities:
+1. Anonymization:
 - Remove only last names while preserving first names
-- Preserve all other content and formatting
-- Keep HTML structure intact
-- Do not modify any other personal information
-- Do not reformat or restructure content`
+- Keep other personal information intact
+
+2. Formatting:
+- Organize content into clear sections
+- Apply consistent heading styles
+- Structure bullet points uniformly
+- Maintain clean spacing
+- Preserve semantic HTML
+
+3. Enhancement:
+- Improve language clarity
+- Strengthen impact of achievements
+- Use active voice
+- Maintain professional tone
+- Keep factual content unchanged`
     });
   }
 
@@ -123,15 +135,60 @@ export class CVAgent {
     return this.getCompletion(prompt);
   }
 
+  async reformatCV(cvContent: string): Promise<string> {
+    const prompt = `Reformat this CV HTML to have a consistent, professional layout while preserving the existing HTML structure. 
+    
+    ${cvContent}
+
+    Requirements:
+    1. Preserve all existing HTML tags and their structure exactly
+    2. Keep all div positions and styling attributes intact
+    3. Only modify text content organization within existing elements
+    4. Maintain all PDF-specific positioning (left, top, etc.)
+    5. Add semantic structure only within existing elements
+    6. Keep all content and meaning intact
+    7. Return the complete HTML with structure preserved`;
+
+    return this.getCompletion(prompt);
+  }
+
+  async enhanceCV(cvContent: string): Promise<string> {
+    const prompt = `Enhance this CV's language while strictly preserving HTML structure and positioning. 
+
+    ${cvContent}
+
+    Requirements:
+    1. Keep all HTML tags and attributes exactly as they are
+    2. Preserve all positioning and styling attributes
+    3. Maintain PDF layout and structure
+    4. Only modify the text content within existing elements
+    5. Use active voice and professional language
+    6. Keep all dates and facts unchanged
+    7. Return the complete HTML with structure preserved`;
+
+    return this.getCompletion(prompt);
+  }
+
   async processCVWithSteps(cvContent: string): Promise<{
     originalContent: string;
     anonymizedContent: string;
+    formattedContent: string;
+    enhancedContent: string;
   }> {
+    // Step 1: Anonymize
     const anonymizedContent = await this.anonymizeLastNames(cvContent);
+    
+    // Step 2: Reformat
+    const formattedContent = await this.reformatCV(anonymizedContent);
+    
+    // Step 3: Enhance
+    const enhancedContent = await this.enhanceCV(formattedContent);
     
     return {
       originalContent: cvContent,
-      anonymizedContent
+      anonymizedContent,
+      formattedContent,
+      enhancedContent
     };
   }
 } 

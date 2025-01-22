@@ -15,10 +15,10 @@ import { CVAgent } from "@/services/AgentService";
 import { toast } from "sonner";
 
 interface ParsedResult {
-  content: string;
-  firstName: string | null;
-  html: string;
-  originalHtml: string;
+  originalContent: string;
+  anonymizedContent: string;
+  formattedContent: string;
+  enhancedContent: string;
 }
 
 export default function Home() {
@@ -27,6 +27,7 @@ export default function Home() {
   const [parsedCV, setParsedCV] = useState<ParsedResult | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeStep, setActiveStep] = useState<'original' | 'anonymized' | 'formatted' | 'enhanced'>('original');
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -58,10 +59,10 @@ export default function Home() {
       
       // Update the parsed result with anonymized content
       setParsedCV({
-        ...initialParsed,
-        content: processedResult.anonymizedContent,
-        html: processedResult.anonymizedContent,
-        firstName: initialParsed.firstName
+        originalContent: initialParsed.html,
+        anonymizedContent: processedResult.anonymizedContent,
+        formattedContent: processedResult.formattedContent,
+        enhancedContent: processedResult.enhancedContent
       });
 
       toast.success("CV processed successfully!");
@@ -142,25 +143,45 @@ export default function Home() {
             </div>
           ) : parsedCV ? (
             <Tabs defaultValue="original" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="original">Original CV</TabsTrigger>
-                <TabsTrigger value="processed">Processed CV</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="original">Original</TabsTrigger>
+                <TabsTrigger value="anonymized">Anonymized</TabsTrigger>
+                <TabsTrigger value="formatted">Formatted</TabsTrigger>
+                <TabsTrigger value="enhanced">Enhanced</TabsTrigger>
               </TabsList>
               
               <TabsContent value="original">
                 <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
                   <div 
                     className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: parsedCV.originalHtml }}
+                    dangerouslySetInnerHTML={{ __html: parsedCV.originalContent }}
                   />
                 </div>
               </TabsContent>
               
-              <TabsContent value="processed">
+              <TabsContent value="anonymized">
                 <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
                   <div 
                     className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: parsedCV.html }}
+                    dangerouslySetInnerHTML={{ __html: parsedCV.anonymizedContent }}
+                  />
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="formatted">
+                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                  <div 
+                    className="prose max-w-none"
+                    dangerouslySetInnerHTML={{ __html: parsedCV.formattedContent }}
+                  />
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="enhanced">
+                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                  <div 
+                    className="prose max-w-none"
+                    dangerouslySetInnerHTML={{ __html: parsedCV.enhancedContent }}
                   />
                 </div>
               </TabsContent>
