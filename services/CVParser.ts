@@ -3,35 +3,24 @@
 import { PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import mammoth from 'mammoth/mammoth.browser';
-import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+
+// Initialize PDF.js worker
+if (typeof window !== 'undefined') {
+  const worker = new Worker(new URL('pdfjs-dist/legacy/build/pdf.worker.js', import.meta.url));
+  pdfjsLib.GlobalWorkerOptions.workerPort = worker;
+}
 
 interface ParsedCV {
   content: string;
   firstName: string | null;
   html: string;
-}
-
-// Initialize PDF.js worker
-if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+  originalHtml: string;
 }
 
 export class CVParser {
-  async parse(file: File) {
-    const fileType = file.name.split('.').pop()?.toLowerCase();
-
-    try {
-      if (fileType === 'pdf') {
-        return await this.parsePDF(file);
-      } else if (fileType === 'docx') {
-        return await this.parseDocx(file);
-      } else {
-        throw new Error('Unsupported file type');
-      }
-    } catch (error) {
-      console.error('Error parsing CV:', error);
-      throw error;
-    }
+  async parse(file: File): Promise<ParsedResult> {
+    return CVParser.parseFile(file);
   }
 
   private async parsePDF(file: File) {
@@ -52,17 +41,18 @@ export class CVParser {
 
     const fileType = file.type;
     const buffer = await file.arrayBuffer();
-    const { text, html } = await this.parseContent(fileType, buffer);
+    const { text, html, originalHtml } = await this.parseContent(fileType, buffer);
     const firstName = this.extractFirstName(text);
 
     return {
       content: this.anonymizeContent(text, firstName),
       firstName,
-      html: this.anonymizeContent(html, firstName)
+      html: this.anonymizeContent(html, firstName),
+      originalHtml: originalHtml
     };
   }
 
-  private static async parseContent(fileType: string, buffer: ArrayBuffer): Promise<{ text: string, html: string }> {
+  private static async parseContent(fileType: string, buffer: ArrayBuffer): Promise<{ text: string, html: string, originalHtml: string }> {
     switch (fileType) {
       case 'application/pdf':
         return this.parsePDF(buffer);
@@ -158,10 +148,11 @@ export class CVParser {
     }
   }
 
-  private static async parsePDF(buffer: ArrayBuffer): Promise<{ text: string, html: string }> {
+  private static async parsePDF(buffer: ArrayBuffer): Promise<{ text: string, html: string, originalHtml: string }> {
     const pdf: PDFDocumentProxy = await pdfjsLib.getDocument({ data: buffer }).promise;
     let text = '';
     let html = '<div class="pdf-content">';
+    let originalHtml = '<div class="pdf-content">';
     
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
@@ -169,9 +160,11 @@ export class CVParser {
       
       // Add page wrapper for better structure
       html += `<div class="pdf-page" data-page="${i}">`;
+      originalHtml += `<div class="pdf-page" data-page="${i}">`;
       
       let lastY: number | null = null;
       let currentParagraph = '';
+      let currentOriginalParagraph = '';
 
       // Process each text item
       content.items
@@ -183,30 +176,35 @@ export class CVParser {
           if (lastY !== null && Math.abs(lastY - item.transform[5]) > 5) {
             if (currentParagraph.trim()) {
               html += `<p>${currentParagraph.trim()}</p>`;
+              originalHtml += `<p>${currentOriginalParagraph.trim()}</p>`;
               currentParagraph = '';
+              currentOriginalParagraph = '';
             }
           }
           
           currentParagraph += item.str + ' ';
+          currentOriginalParagraph += item.str + ' ';
           lastY = item.transform[5];
         });
 
       // Add any remaining paragraph
       if (currentParagraph.trim()) {
         html += `<p>${currentParagraph.trim()}</p>`;
+        originalHtml += `<p>${currentOriginalParagraph.trim()}</p>`;
       }
 
       html += '</div>'; // Close page div
+      originalHtml += '</div>'; // Close page div
       text += '\n';
     }
     
     html += '</div>';
+    originalHtml += '</div>';
     
-    return { text, html };
+    return { text, html, originalHtml };
   }
 
-  private static async parseDocx(buffer: ArrayBuffer): Promise<{ text: string, html: string }> {
-    // Use mammoth's convertToHtml instead of extractRawText
+  private static async parseDocx(buffer: ArrayBuffer): Promise<{ text: string, html: string, originalHtml: string }> {
     const [textResult, htmlResult] = await Promise.all([
       mammoth.extractRawText({ arrayBuffer: buffer }),
       mammoth.convertToHtml({ arrayBuffer: buffer })
@@ -214,19 +212,19 @@ export class CVParser {
 
     return {
       text: textResult.value,
-      html: htmlResult.value
+      html: htmlResult.value,
+      originalHtml: htmlResult.value
     };
   }
 
-  private static async parseDoc(): Promise<{ text: string, html: string }> {
+  private static async parseDoc(): Promise<{ text: string, html: string, originalHtml: string }> {
     throw new Error('Please save your .doc file as .docx and try again');
   }
 
-  private static async parseTxt(buffer: ArrayBuffer): Promise<{ text: string, html: string }> {
+  private static async parseTxt(buffer: ArrayBuffer): Promise<{ text: string, html: string, originalHtml: string }> {
     const decoder = new TextDecoder('utf-8');
     const text = decoder.decode(buffer);
-    // Convert plain text to HTML by preserving line breaks and spaces
-    const html = '<div class="txt-content">' + 
+    const htmlContent = '<div class="txt-content">' + 
       text
         .split('\n')
         .map(line => line.trim())
@@ -235,6 +233,10 @@ export class CVParser {
         .join('\n') +
       '</div>';
     
-    return { text, html };
+    return { 
+      text, 
+      html: htmlContent,
+      originalHtml: htmlContent 
+    };
   }
 } 

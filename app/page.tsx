@@ -16,7 +16,7 @@ interface ParsedResult {
   content: string;
   firstName: string | null;
   html: string;
-  originalHtml?: string;
+  originalHtml: string;
 }
 
 export default function Home() {
@@ -29,6 +29,7 @@ export default function Home() {
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
     if (uploadedFile) {
+      console.log('File uploaded:', uploadedFile);
       setFile(uploadedFile);
       setParsedCV(null);
       setError(null);
@@ -45,6 +46,7 @@ export default function Home() {
     try {
       const parser = new CVParser();
       const result = await parser.parse(file);
+      console.log('Parsed CV Result:', result);
       setParsedCV(result);
     } catch (error) {
       console.error('Error processing CV:', error);
@@ -53,6 +55,8 @@ export default function Home() {
       setIsProcessing(false);
     }
   };
+
+  console.log('Current parsedCV state:', parsedCV);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8">
@@ -97,54 +101,49 @@ export default function Home() {
       </main>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[80vh]">
           <DialogHeader>
-            <DialogTitle className="text-center w-full">
-              {isProcessing ? "Processing CV" : error ? "Error" : "CV Preview"}
-            </DialogTitle>
+            <DialogTitle>CV Preview</DialogTitle>
           </DialogHeader>
-
+          
           {isProcessing ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="mt-4 text-sm text-muted-foreground">
-                Processing your CV...
-              </p>
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <p className="mt-4 text-sm text-muted-foreground">Processing your CV...</p>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center py-8">
-              <p className="text-sm text-destructive">{error}</p>
-              <Button 
-                onClick={() => setShowDialog(false)} 
-                variant="outline" 
-                className="mt-4"
-              >
-                Close
-              </Button>
+            <div className="text-center py-8">
+              <p className="text-red-500">{error}</p>
             </div>
-          ) : (
+          ) : parsedCV ? (
             <Tabs defaultValue="original" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="original">Original CV</TabsTrigger>
                 <TabsTrigger value="processed">Processed CV</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="original" className="mt-4">
-                <div className="border rounded-lg p-4 min-h-[400px] flex items-center justify-center bg-muted/10">
-                  <p className="text-muted-foreground">
-                    Original CV content will appear here
-                  </p>
+              <TabsContent value="original">
+                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                  <div 
+                    className="prose max-w-none"
+                    dangerouslySetInnerHTML={{ __html: parsedCV.originalHtml }}
+                  />
                 </div>
               </TabsContent>
               
-              <TabsContent value="processed" className="mt-4">
-                <div className="border rounded-lg p-4 min-h-[400px] flex items-center justify-center">
-                  <p className="text-muted-foreground">
-                    Processed and anonymized CV will appear here
-                  </p>
+              <TabsContent value="processed">
+                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                  <div 
+                    className="prose max-w-none"
+                    dangerouslySetInnerHTML={{ __html: parsedCV.html }}
+                  />
                 </div>
               </TabsContent>
             </Tabs>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No CV data available</p>
+            </div>
           )}
         </DialogContent>
       </Dialog>
