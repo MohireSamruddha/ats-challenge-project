@@ -256,11 +256,11 @@ export default function Home() {
           )}
 
           {parsedCV && activeTab === 'enhanced' && (
-            <div className="flex justify-end gap-2 mt-4">
+            <div className="flex justify-end gap-2 mt-2 mb-4">
               <Button
                 onClick={handleJobMatch}
-                variant="secondary"
-                className="gap-2"
+                variant="default"
+                className="gap-2 bg-black hover:bg-black/90"
               >
                 {isLoadingJobs ? (
                   <>
@@ -276,8 +276,7 @@ export default function Home() {
               </Button>
               <Button
                 onClick={async () => {
-                  if (isGeneratingPDF) return;
-                  
+                  if (!parsedCV) return;
                   try {
                     setIsGeneratingPDF(true);
                     const content = editedCV || parsedCV.enhancedContent;
@@ -300,7 +299,7 @@ export default function Home() {
                   }
                 }}
                 disabled={isGeneratingPDF}
-                className="gap-2"
+                className="gap-2 bg-black hover:bg-black/90"
               >
                 {isGeneratingPDF ? (
                   <>
