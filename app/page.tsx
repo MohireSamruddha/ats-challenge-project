@@ -10,10 +10,11 @@ import {
 } from "@/components/ui/dialog";
 import { CVParser } from "@/services/CVParser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, Download } from "lucide-react";
 import { CVAgent } from "@/services/AgentService";
 import { toast } from "sonner";
 import { RichTextEditor } from "@/components/RichTextEditor";
+import { downloadAsPDF } from "@/lib/utils";
 
 interface ParsedResult {
   originalContent: string;
@@ -34,6 +35,8 @@ export default function Home() {
     'idle' | 'parsing' | 'anonymizing' | 'formatting' | 'enhancing' | 'complete'
   >('idle');
   const [editedCV, setEditedCV] = useState<string | null>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [activeTab, setActiveTab] = useState('original');
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -171,7 +174,7 @@ export default function Home() {
               <p className="text-red-500">{error}</p>
             </div>
           ) : parsedCV ? (
-            <Tabs defaultValue="original" className="w-full">
+            <Tabs defaultValue="original" onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="original">Original</TabsTrigger>
                 <TabsTrigger value="anonymized">Anonymized</TabsTrigger>
@@ -228,6 +231,51 @@ export default function Home() {
           ) : (
             <div className="text-center py-8">
               <p className="text-muted-foreground">No CV data available</p>
+            </div>
+          )}
+
+          {parsedCV && activeTab === 'enhanced' && (
+            <div className="flex justify-end mt-4">
+              <Button
+                onClick={async () => {
+                  if (isGeneratingPDF) return;
+                  
+                  try {
+                    setIsGeneratingPDF(true);
+                    const content = editedCV || parsedCV.enhancedContent;
+                    const firstNameMatch = content.match(/<h1 class="cv-name">(.*?)<\/h1>/);
+                    const firstName = firstNameMatch ? firstNameMatch[1].trim() : 'CV';
+                    
+                    await toast.promise(
+                      downloadAsPDF(content, firstName),
+                      {
+                        loading: 'Generating PDF...',
+                        success: 'PDF downloaded successfully!',
+                        error: 'Failed to generate PDF'
+                      }
+                    );
+                  } catch (error) {
+                    console.error('PDF generation error:', error);
+                    toast.error('Failed to generate PDF');
+                  } finally {
+                    setIsGeneratingPDF(false);
+                  }
+                }}
+                disabled={isGeneratingPDF}
+                className="gap-2"
+              >
+                {isGeneratingPDF ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-4 w-4" />
+                    Download PDF
+                  </>
+                )}
+              </Button>
             </div>
           )}
         </DialogContent>

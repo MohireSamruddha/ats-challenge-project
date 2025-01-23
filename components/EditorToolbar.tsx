@@ -1,6 +1,13 @@
 import { Editor } from '@tiptap/react'
-import { Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight } from 'lucide-react'
-import { Button } from './ui/button'
+import { Button } from "@/components/ui/button"
+import { 
+  Bold, 
+  Italic, 
+  Underline,
+  AlignLeft,
+  AlignCenter,
+  AlignRight
+} from 'lucide-react'
 
 interface EditorToolbarProps {
   editor: Editor | null
