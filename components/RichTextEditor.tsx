@@ -41,22 +41,41 @@ export function RichTextEditor({ initialContent, onChange }: RichTextEditorProps
   }
 
   const handleSave = () => {
-    setIsSaved(true);
+    if (editor) {
+      const content = editor.getHTML();
+      setIsSaved(true);
+      onChange?.(content);
+    }
   };
 
   const handleDownloadPDF = async () => {
     if (!editorRef.current) return;
     
+    const contentClone = editorRef.current.cloneNode(true) as HTMLElement;
+    
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      * {
+        font-family: Arial, sans-serif;
+      }
+      .ProseMirror {
+        padding: 20px;
+      }
+      h1, h2, h3 { margin-bottom: 8px; }
+      p { margin-bottom: 8px; line-height: 1.5; }
+    `;
+    contentClone.prepend(styleElement);
+
     const opt = {
-      margin: 1,
+      margin: [0.5, 0.5],
       filename: 'resume.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
+      html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
 
     try {
-      await html2pdf().set(opt).from(editorRef.current).save();
+      await html2pdf().set(opt).from(contentClone).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
     }
@@ -65,19 +84,21 @@ export function RichTextEditor({ initialContent, onChange }: RichTextEditorProps
   return (
     <div className="border rounded-lg">
       <EditorToolbar editor={editor} />
-      <div ref={editorRef}>
+      <div ref={editorRef} className="min-h-[500px] p-4">
         <EditorContent editor={editor} />
       </div>
       <div className="p-2 border-t flex justify-end gap-2">
         <Button 
           variant="outline" 
           onClick={handleSave}
+          className="hover:bg-gray-100"
         >
-          Save Changes
+          {isSaved ? 'Saved ✓' : 'Save Changes'}
         </Button>
         {isSaved && (
           <Button 
             onClick={handleDownloadPDF}
+            className="bg-primary hover:bg-primary/90"
           >
             Download PDF
           </Button>
