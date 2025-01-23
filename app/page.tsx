@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { CVParser } from "@/services/CVParser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Download, Search, Upload, Sparkles, Shield, FileText } from "lucide-react";
+import { Loader2, Download, Search, Upload, Sparkles, Shield, FileText, GraduationCap } from "lucide-react";
 import { CVAgent } from "@/services/AgentService";
 import { toast } from "sonner";
 import { RichTextEditor } from "@/components/RichTextEditor";
@@ -41,6 +41,9 @@ export default function Home() {
   const [showJobDialog, setShowJobDialog] = useState(false);
   const [jobRecommendations, setJobRecommendations] = useState<string | null>(null);
   const [isLoadingJobs, setIsLoadingJobs] = useState(false);
+  const [showCareerDialog, setShowCareerDialog] = useState(false);
+  const [careerPlan, setCareerPlan] = useState<string | null>(null);
+  const [isLoadingCareer, setIsLoadingCareer] = useState(false);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -120,6 +123,24 @@ export default function Home() {
       toast.error('Failed to get job recommendations');
     } finally {
       setIsLoadingJobs(false);
+    }
+  };
+
+  const handleCareerPlan = async () => {
+    if (!parsedCV?.enhancedContent) return;
+    
+    setIsLoadingCareer(true);
+    setShowCareerDialog(true);
+    
+    try {
+      const agent = new CVAgent();
+      const plan = await agent.getCareerProgression(parsedCV.enhancedContent);
+      setCareerPlan(plan);
+    } catch (error) {
+      console.error('Error getting career plan:', error);
+      toast.error('Failed to generate career plan');
+    } finally {
+      setIsLoadingCareer(false);
     }
   };
 
@@ -405,6 +426,23 @@ export default function Home() {
                     </>
                   )}
                 </Button>
+                <Button
+                  onClick={handleCareerPlan}
+                  variant="default"
+                  className="gap-2 bg-black hover:bg-black/90"
+                >
+                  {isLoadingCareer ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Analyzing career path...
+                    </>
+                  ) : (
+                    <>
+                      <GraduationCap className="h-4 w-4" />
+                      Career Progression Plan
+                    </>
+                  )}
+                </Button>
               </div>
             )}
           </div>
@@ -430,6 +468,30 @@ export default function Home() {
             <div 
               className="prose max-w-none"
               dangerouslySetInnerHTML={{ __html: jobRecommendations || '' }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showCareerDialog} onOpenChange={setShowCareerDialog}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-center mb-4">
+              AI Career Progression Plan
+            </DialogTitle>
+          </DialogHeader>
+          
+          {isLoadingCareer ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <p className="mt-4 text-sm text-muted-foreground">
+                Analyzing your career path and creating progression plan...
+              </p>
+            </div>
+          ) : (
+            <div 
+              className="prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: careerPlan || '' }}
             />
           )}
         </DialogContent>

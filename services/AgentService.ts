@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { Loader2, Download, Search, Upload, Sparkles, Shield, FileText, GraduationCap } from "lucide-react";
 
 const openai = new OpenAI({
   apiKey: "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", dangerouslyAllowBrowser: true
@@ -265,6 +266,54 @@ IMPORTANT: Return only raw HTML without any markdown code blocks or syntax highl
     return this.getCompletion(prompt);
   }
 
+  async getCareerProgression(enhancedCV: string): Promise<string> {
+    const prompt = `Analyze this CV and provide a detailed career progression plan:
+
+    ${enhancedCV}
+
+    Requirements:
+    1. Current Career Analysis:
+       - Identify current career level and industry
+       - List key strengths and expertise
+       - Highlight unique selling points
+
+    2. Short-term Career Path (1-2 years):
+       - Suggest 2-3 immediate next role opportunities
+       - Required skills/certifications for each role
+       - Estimated salary ranges
+       - Potential companies/industries
+
+    3. Long-term Career Path (3-5 years):
+       - Suggest 2-3 senior/advanced positions
+       - Strategic skills to develop
+       - Leadership/management requirements
+       - Industry trends and opportunities
+
+    4. Development Plan:
+       - Specific certifications to pursue
+       - Technical skills to acquire
+       - Soft skills to develop
+       - Recommended training/courses
+
+    Format the response as professional HTML with:
+    - Clear section headings
+    - Timeline visualization
+    - Progress indicators
+    - Skill development roadmap
+    - Salary range indicators
+    
+    Add these CSS classes:
+    - career-path-section
+    - timeline-item
+    - skill-progress
+    - salary-range
+    - action-item
+
+    Return ONLY the formatted HTML with embedded CSS.`;
+
+    return this.getCompletion(prompt);
+  }
+
   getFormattingCSS(): string {
     return `<style>
       body {
@@ -357,6 +406,59 @@ IMPORTANT: Return only raw HTML without any markdown code blocks or syntax highl
       .job-recommendation li {
         color: #374151;
         margin: 0.3em 0;
+      }
+
+      .career-path-section {
+        background: #fff;
+        border-radius: 8px;
+        padding: 1.5em;
+        margin-bottom: 1.5em;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+
+      .timeline-item {
+        position: relative;
+        padding-left: 2em;
+        margin-bottom: 1.5em;
+        border-left: 2px solid #2563eb;
+      }
+
+      .skill-progress {
+        display: flex;
+        align-items: center;
+        margin: 0.5em 0;
+        gap: 1em;
+      }
+
+      .skill-progress .bar {
+        flex-grow: 1;
+        height: 8px;
+        background: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .skill-progress .fill {
+        height: 100%;
+        background: #2563eb;
+        transition: width 0.3s ease;
+      }
+
+      .salary-range {
+        display: inline-block;
+        padding: 0.25em 0.75em;
+        background: #f3f4f6;
+        border-radius: 4px;
+        color: #374151;
+        font-size: 0.9em;
+      }
+
+      .action-item {
+        background: #f8fafc;
+        padding: 1em;
+        margin: 0.5em 0;
+        border-left: 3px solid #2563eb;
+        border-radius: 0 4px 4px 0;
       }
     </style>`;
   }
