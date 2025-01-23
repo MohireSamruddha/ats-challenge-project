@@ -10,11 +10,12 @@ import {
 } from "@/components/ui/dialog";
 import { CVParser } from "@/services/CVParser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Download, Search } from "lucide-react";
+import { Loader2, Download, Search, Upload, Sparkles, Shield, FileText } from "lucide-react";
 import { CVAgent } from "@/services/AgentService";
 import { toast } from "sonner";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { downloadAsPDF } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 interface ParsedResult {
   originalContent: string;
@@ -125,53 +126,123 @@ export default function Home() {
   console.log('Current parsedCV state:', parsedCV);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8">
-      <main className="flex flex-col items-center gap-8">
-        <h2 className="text-3xl font-bold">Upload CV</h2>
-        
-        <div className="flex flex-col items-center gap-4">
-          <Button
-            variant="outline"
-            asChild
-            className="h-12 px-8"
-          >
-            <label htmlFor="cv-upload" className="cursor-pointer">
-              {file ? file.name : 'Choose a file'}
-            </label>
-          </Button>
-          <input
-            id="cv-upload"
-            type="file"
-            accept=".pdf,.docx"
-            onChange={handleFileUpload}
-            className="hidden"
-          />
-          <p className="text-sm text-muted-foreground">
-            Supported formats: PDF, DOCX
-          </p>
-          {file && (
-            <>
-              <p className="text-sm text-green-600">
-                File uploaded successfully! You can now proceed with processing.
-              </p>
-              <Button 
-                onClick={handleProcessCV} 
-                disabled={isProcessing}
-                className="mt-2"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  "Process CV"
-                )}
-              </Button>
-            </>
-          )}
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted">
+      {/* Hero Section */}
+      <div className="relative isolate px-6 pt-14 lg:px-8">
+        <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+          <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
         </div>
-      </main>
+        
+        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+          <div className="text-center">
+            <motion.h1 
+              className="text-4xl font-bold tracking-tight sm:text-6xl mb-8 bg-gradient-to-r from-primary to-purple-600 text-transparent bg-clip-text"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              AI-Powered CV Assistant
+            </motion.h1>
+            <motion.p 
+              className="text-lg leading-8 text-muted-foreground mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              Transform your CV with AI-powered anonymization, professional reformatting, and intelligent enhancements.
+            </motion.p>
+
+            {/* Feature Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+              <motion.div 
+                className="p-6 rounded-lg bg-card"
+                whileHover={{ scale: 1.05 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Shield className="w-12 h-12 mb-4 mx-auto text-primary" />
+                <h3 className="text-lg font-semibold mb-2">Privacy First</h3>
+                <p className="text-sm text-muted-foreground">Secure anonymization of personal information</p>
+              </motion.div>
+
+              <motion.div 
+                className="p-6 rounded-lg bg-card"
+                whileHover={{ scale: 1.05 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <Sparkles className="w-12 h-12 mb-4 mx-auto text-primary" />
+                <h3 className="text-lg font-semibold mb-2">AI Enhancement</h3>
+                <p className="text-sm text-muted-foreground">Smart content improvements and formatting</p>
+              </motion.div>
+
+              <motion.div 
+                className="p-6 rounded-lg bg-card"
+                whileHover={{ scale: 1.05 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+              >
+                <FileText className="w-12 h-12 mb-4 mx-auto text-primary" />
+                <h3 className="text-lg font-semibold mb-2">Professional Format</h3>
+                <p className="text-sm text-muted-foreground">Clean, ATS-friendly layout</p>
+              </motion.div>
+            </div>
+
+            {/* Upload Section */}
+            <motion.div 
+              className="max-w-md mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
+              <div className="flex flex-col items-center gap-4">
+                <Button
+                  variant="outline"
+                  asChild
+                  className="h-32 w-full border-dashed border-2 hover:border-primary hover:bg-muted/50"
+                >
+                  <label htmlFor="cv-upload" className="cursor-pointer flex flex-col items-center justify-center gap-2">
+                    <Upload className="w-8 h-8 text-muted-foreground" />
+                    <span className="font-medium">{file ? file.name : 'Choose a file'}</span>
+                    <span className="text-sm text-muted-foreground">
+                      Drag & drop or click to upload
+                    </span>
+                  </label>
+                </Button>
+                <input
+                  id="cv-upload"
+                  type="file"
+                  accept=".pdf,.docx"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <p className="text-sm text-muted-foreground">
+                  Supported formats: PDF, DOCX
+                </p>
+                {file && (
+                  <Button 
+                    onClick={handleProcessCV} 
+                    disabled={isProcessing}
+                    className="w-full"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      "Process CV"
+                    )}
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-4xl max-h-[80vh]">
