@@ -243,6 +243,28 @@ Do not include any explanatory text in your response - return only the processed
     return this.getCompletion(prompt);
   }
 
+  async getJobRecommendations(enhancedCV: string): Promise<string> {
+    const prompt = `Based on this enhanced CV, recommend suitable job positions and explain why they would be a good fit. Format your response in a clear, professional way:
+
+    ${enhancedCV}
+
+    Requirements:
+    1. Analyze key skills, experience, and qualifications
+    2. Suggest 3-5 specific job positions
+    3. For each position provide:
+       - Job title
+       - Why it's a good match
+       - Key skills that align
+    4. Format as HTML with:
+       - Clear headings
+       - Bullet points for skills
+       - Professional spacing
+    
+    Return ONLY the formatted HTML recommendations.`;
+
+    return this.getCompletion(prompt);
+  }
+
   getFormattingCSS(): string {
     return `<style>
       body {
@@ -307,6 +329,34 @@ Do not include any explanatory text in your response - return only the processed
       .job-title span {
         font-weight: normal;
         color: #666;
+      }
+      .job-recommendation {
+        margin: 1.5em 0;
+        padding: 1.2em;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        background: #f9f9f9;
+      }
+      
+      .job-recommendation h3 {
+        color: #2563eb;
+        margin-bottom: 0.5em;
+        font-size: 1.2em;
+      }
+      
+      .job-recommendation .match-reason {
+        color: #4b5563;
+        margin: 0.5em 0;
+      }
+      
+      .job-recommendation ul {
+        margin-top: 0.5em;
+        padding-left: 1.2em;
+      }
+      
+      .job-recommendation li {
+        color: #374151;
+        margin: 0.3em 0;
       }
     </style>`;
   }

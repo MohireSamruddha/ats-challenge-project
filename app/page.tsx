@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { CVParser } from "@/services/CVParser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Download } from "lucide-react";
+import { Loader2, Download, Search } from "lucide-react";
 import { CVAgent } from "@/services/AgentService";
 import { toast } from "sonner";
 import { RichTextEditor } from "@/components/RichTextEditor";
@@ -37,6 +37,9 @@ export default function Home() {
   const [editedCV, setEditedCV] = useState<string | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [activeTab, setActiveTab] = useState('original');
+  const [showJobDialog, setShowJobDialog] = useState(false);
+  const [jobRecommendations, setJobRecommendations] = useState<string | null>(null);
+  const [isLoadingJobs, setIsLoadingJobs] = useState(false);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -98,6 +101,24 @@ export default function Home() {
       setProcessingStatus('idle');
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleJobMatch = async () => {
+    if (!parsedCV?.enhancedContent) return;
+    
+    setIsLoadingJobs(true);
+    setShowJobDialog(true);
+    
+    try {
+      const agent = new CVAgent();
+      const recommendations = await agent.getJobRecommendations(parsedCV.enhancedContent);
+      setJobRecommendations(recommendations);
+    } catch (error) {
+      console.error('Error getting job recommendations:', error);
+      toast.error('Failed to get job recommendations');
+    } finally {
+      setIsLoadingJobs(false);
     }
   };
 
@@ -235,7 +256,24 @@ export default function Home() {
           )}
 
           {parsedCV && activeTab === 'enhanced' && (
-            <div className="flex justify-end mt-4">
+            <div className="flex justify-end gap-2 mt-4">
+              <Button
+                onClick={handleJobMatch}
+                variant="secondary"
+                className="gap-2"
+              >
+                {isLoadingJobs ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Finding matches...
+                  </>
+                ) : (
+                  <>
+                    <Search className="h-4 w-4" />
+                    AI Job Matcher
+                  </>
+                )}
+              </Button>
               <Button
                 onClick={async () => {
                   if (isGeneratingPDF) return;
@@ -277,6 +315,30 @@ export default function Home() {
                 )}
               </Button>
             </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showJobDialog} onOpenChange={setShowJobDialog}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-center mb-4">
+              AI Job Recommendations
+            </DialogTitle>
+          </DialogHeader>
+          
+          {isLoadingJobs ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <p className="mt-4 text-sm text-muted-foreground">
+                Analyzing CV and finding best matches...
+              </p>
+            </div>
+          ) : (
+            <div 
+              className="prose max-w-none"
+              dangerouslySetInnerHTML={{ __html: jobRecommendations || '' }}
+            />
           )}
         </DialogContent>
       </Dialog>
