@@ -246,146 +246,168 @@ export default function Home() {
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-w-4xl max-h-[80vh]">
-          <DialogHeader>
-            <DialogTitle>CV Preview</DialogTitle>
-          </DialogHeader>
-          
-          {isProcessing ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin" />
-              <p className="mt-4 text-sm text-muted-foreground">
-                {processingStatus === 'parsing' && "Parsing CV..."}
-                {processingStatus === 'anonymizing' && "Anonymizing CV..."}
-                {processingStatus === 'formatting' && "Reformatting CV..."}
-                {processingStatus === 'enhancing' && "Enhancing CV..."}
-                {processingStatus === 'complete' && "Finalizing..."}
-              </p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-8">
-              <p className="text-red-500">{error}</p>
-            </div>
-          ) : parsedCV ? (
-            <Tabs defaultValue="original" onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="original">Original</TabsTrigger>
-                <TabsTrigger value="anonymized">Anonymized</TabsTrigger>
-                <TabsTrigger value="formatted">Formatted</TabsTrigger>
-                <TabsTrigger value="enhanced">Enhanced</TabsTrigger>
-                <TabsTrigger value="edit">Edit</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="original">
-                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
-                  <div 
-                    className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: parsedCV.originalContent }}
-                  />
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="anonymized">
-                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
-                  <div 
-                    className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: parsedCV.anonymizedContent }}
-                  />
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="formatted">
-                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
-                  <div 
-                    className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: parsedCV.formattedContent }}
-                  />
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="enhanced">
-                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
-                  <div 
-                    className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ __html: parsedCV.enhancedContent }}
-                  />
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="edit">
-                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
-                  <RichTextEditor
-                    initialContent={editedCV || parsedCV.enhancedContent}
-                    onChange={(html) => setEditedCV(html)}
-                  />
-                </div>
-              </TabsContent>
-            </Tabs>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No CV data available</p>
-            </div>
-          )}
+          <div className="dialog-container">
+            <DialogHeader>
+              <DialogTitle>CV Preview</DialogTitle>
+            </DialogHeader>
+            
+            {isProcessing ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin" />
+                <p className="mt-4 text-sm text-muted-foreground">
+                  {processingStatus === 'parsing' && "Parsing CV..."}
+                  {processingStatus === 'anonymizing' && "Anonymizing CV..."}
+                  {processingStatus === 'formatting' && "Reformatting CV..."}
+                  {processingStatus === 'enhancing' && "Enhancing CV..."}
+                  {processingStatus === 'complete' && "Finalizing..."}
+                </p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8">
+                <p className="text-red-500">{error}</p>
+              </div>
+            ) : parsedCV ? (
+              <Tabs defaultValue="original" onValueChange={setActiveTab}>
+                <TabsList className="grid w-full grid-cols-5">
+                  <TabsTrigger value="original">Original</TabsTrigger>
+                  <TabsTrigger value="anonymized">Anonymized</TabsTrigger>
+                  <TabsTrigger value="formatted">Formatted</TabsTrigger>
+                  <TabsTrigger value="enhanced">Enhanced</TabsTrigger>
+                  <TabsTrigger value="edit">Edit</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="original">
+                  <div className="dialog-tabs-content">
+                    <div className="dialog-content-wrapper">
+                      <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                        <div 
+                          className="prose max-w-none"
+                          dangerouslySetInnerHTML={{ __html: parsedCV.originalContent }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="anonymized">
+                  <div className="dialog-tabs-content">
+                    <div className="dialog-content-wrapper">
+                      <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                        <div 
+                          className="prose max-w-none"
+                          dangerouslySetInnerHTML={{ __html: parsedCV.anonymizedContent }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="formatted">
+                  <div className="dialog-tabs-content">
+                    <div className="dialog-content-wrapper">
+                      <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                        <div 
+                          className="prose max-w-none"
+                          dangerouslySetInnerHTML={{ __html: parsedCV.formattedContent }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="enhanced">
+                  <div className="dialog-tabs-content">
+                    <div className="dialog-content-wrapper">
+                      <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                        <div 
+                          className="prose max-w-none"
+                          dangerouslySetInnerHTML={{ __html: parsedCV.enhancedContent }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="edit">
+                  <div className="dialog-tabs-content">
+                    <div className="dialog-content-wrapper">
+                      <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                        <RichTextEditor
+                          initialContent={editedCV || parsedCV.enhancedContent}
+                          onChange={(html) => setEditedCV(html)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">No CV data available</p>
+              </div>
+            )}
 
-          {parsedCV && activeTab === 'enhanced' && (
-            <div className="flex justify-end gap-2 mt-2 mb-4">
-              <Button
-                onClick={handleJobMatch}
-                variant="default"
-                className="gap-2 bg-black hover:bg-black/90"
-              >
-                {isLoadingJobs ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Finding matches...
-                  </>
-                ) : (
-                  <>
-                    <Search className="h-4 w-4" />
-                    AI Job Matcher
-                  </>
-                )}
-              </Button>
-              <Button
-                onClick={async () => {
-                  if (!parsedCV) return;
-                  try {
-                    setIsGeneratingPDF(true);
-                    const content = editedCV || parsedCV.enhancedContent;
-                    const firstNameMatch = content.match(/<h1 class="cv-name">(.*?)<\/h1>/);
-                    const firstName = firstNameMatch ? firstNameMatch[1].trim() : 'CV';
-                    
-                    await toast.promise(
-                      downloadAsPDF(content, firstName),
-                      {
-                        loading: 'Generating PDF...',
-                        success: 'PDF downloaded successfully!',
-                        error: 'Failed to generate PDF'
-                      }
-                    );
-                  } catch (error) {
-                    console.error('PDF generation error:', error);
-                    toast.error('Failed to generate PDF');
-                  } finally {
-                    setIsGeneratingPDF(false);
-                  }
-                }}
-                disabled={isGeneratingPDF}
-                className="gap-2 bg-black hover:bg-black/90"
-              >
-                {isGeneratingPDF ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Download className="h-4 w-4" />
-                    Download PDF
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
+            {parsedCV && activeTab === 'enhanced' && (
+              <div className="flex justify-end gap-2 mt-2 mb-4">
+                <Button
+                  onClick={handleJobMatch}
+                  variant="default"
+                  className="gap-2 bg-black hover:bg-black/90"
+                >
+                  {isLoadingJobs ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Finding matches...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="h-4 w-4" />
+                      AI Job Matcher
+                    </>
+                  )}
+                </Button>
+                <Button
+                  onClick={async () => {
+                    if (!parsedCV) return;
+                    try {
+                      setIsGeneratingPDF(true);
+                      const content = editedCV || parsedCV.enhancedContent;
+                      const firstNameMatch = content.match(/<h1 class="cv-name">(.*?)<\/h1>/);
+                      const firstName = firstNameMatch ? firstNameMatch[1].trim() : 'CV';
+                      
+                      await toast.promise(
+                        downloadAsPDF(content, firstName),
+                        {
+                          loading: 'Generating PDF...',
+                          success: 'PDF downloaded successfully!',
+                          error: 'Failed to generate PDF'
+                        }
+                      );
+                    } catch (error) {
+                      console.error('PDF generation error:', error);
+                      toast.error('Failed to generate PDF');
+                    } finally {
+                      setIsGeneratingPDF(false);
+                    }
+                  }}
+                  disabled={isGeneratingPDF}
+                  className="gap-2 bg-black hover:bg-black/90"
+                >
+                  {isGeneratingPDF ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4" />
+                      Download PDF
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
