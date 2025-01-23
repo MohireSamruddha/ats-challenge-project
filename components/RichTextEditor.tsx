@@ -60,22 +60,70 @@ export function RichTextEditor({ initialContent, onChange }: RichTextEditorProps
       }
       .ProseMirror {
         padding: 20px;
+        max-width: 100%;
+        box-sizing: border-box;
       }
-      h1, h2, h3 { margin-bottom: 8px; }
-      p { margin-bottom: 8px; line-height: 1.5; }
+      /* Ensure headings don't break across pages */
+      h1, h2, h3 { 
+        margin-bottom: 8px;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+      }
+      /* Keep paragraphs together when possible */
+      p { 
+        margin-bottom: 8px; 
+        line-height: 1.5;
+        orphans: 3;
+        widows: 3;
+      }
+      /* Prevent unwanted breaks within elements */
+      img, table, figure {
+        page-break-inside: avoid;
+      }
+      /* Add page breaks before major sections */
+      .page-break-before {
+        page-break-before: always;
+      }
+      /* Ensure lists stay together */
+      ul, ol {
+        page-break-inside: avoid;
+      }
+      li {
+        page-break-inside: avoid;
+      }
     `;
     contentClone.prepend(styleElement);
 
     const opt = {
-      margin: [0.5, 0.5],
+      margin: [0.75, 0.75],
       filename: 'resume.pdf',
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        letterRendering: true,
+        scrollY: -window.scrollY,
+      },
+      jsPDF: { 
+        unit: 'in',
+        format: 'letter',
+        orientation: 'portrait',
+        hotfixes: ['px_scaling'],
+        compress: true,
+      }
     };
 
     try {
-      await html2pdf().set(opt).from(contentClone).save();
+      const wrapper = document.createElement('div');
+      wrapper.style.width = '8.5in';
+      wrapper.style.margin = '0 auto';
+      wrapper.appendChild(contentClone);
+
+      await html2pdf()
+        .set(opt)
+        .from(wrapper)
+        .toPdf()
+        .output('save', { filename: 'resume.pdf' });
     } catch (error) {
       console.error('Error generating PDF:', error);
     }
