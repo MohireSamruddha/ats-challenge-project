@@ -174,8 +174,8 @@ export default function Home() {
               Transform your CV with AI-powered anonymization, professional reformatting, and intelligent enhancements.
             </motion.p>
 
-            {/* Feature Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {/* Feature Cards - Now in a 4-column grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <motion.div 
                 className="p-4 rounded-lg bg-card"
                 whileHover={{ scale: 1.05 }}
@@ -210,6 +210,18 @@ export default function Home() {
                 <FileText className="w-8 h-8 mb-2 mx-auto text-primary" />
                 <h3 className="text-base font-semibold mb-1">Professional Format</h3>
                 <p className="text-xs text-muted-foreground">Clean, ATS-friendly layout</p>
+              </motion.div>
+
+              <motion.div 
+                className="p-4 rounded-lg bg-card"
+                whileHover={{ scale: 1.05 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
+                <GraduationCap className="w-8 h-8 mb-2 mx-auto text-primary" />
+                <h3 className="text-base font-semibold mb-1">Career Guidance</h3>
+                <p className="text-xs text-muted-foreground">AI-powered career recommendations</p>
               </motion.div>
             </div>
 
