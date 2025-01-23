@@ -40,7 +40,7 @@ export class CVAgent {
    - Maintain professional tone
    - Keep factual content unchanged
 
-Do not include any explanatory text in your response - return only the processed HTML.`
+IMPORTANT: Return only raw HTML without any markdown code blocks or syntax highlighting.`
     });
   }
 
@@ -131,34 +131,34 @@ Do not include any explanatory text in your response - return only the processed
   async anonymizeLastNames(cvContent: string): Promise<string> {
     const prompt = `Anonymize this CV by removing personally identifiable information while keeping the first name:
 
-    ${cvContent}
+${cvContent}
 
-    Strict anonymization rules:
-    1. Remove ALL last names, middle names, and family names
-    2. Keep ONLY the first name
-    3. Remove:
-       - email addresses
-       - social media handles
-       - phone numbers
-       - addresses
-    4. IMPORTANT: Preserve exactly as is:
-       - ALL company names
-       - ALL organization names
-       - ALL educational institution names
-       - ALL job titles
-       - ALL professional certifications
-    5. Handle various name formats:
-       - ALL CAPS: "JOHN SMITH" → "JOHN"
-       - Mixed case: "John Smith" → "John"
-       - With titles: "Mr. John Smith" → "John"
-       - With middle names: "John Robert Smith" → "John"
-    5. Preserve:
-       - All HTML formatting and structure
-       - Professional titles and credentials
-       - Company names
-       - Educational institution names
-    
-    Return ONLY the anonymized HTML with no explanations.`;
+Strict anonymization rules:
+1. Remove ALL last names, middle names, and family names
+2. Keep ONLY the first name
+3. Remove:
+   - email addresses
+   - social media handles
+   - phone numbers
+   - addresses
+4. IMPORTANT: Preserve exactly as is:
+   - ALL company names
+   - ALL organization names
+   - ALL educational institution names
+   - ALL job titles
+   - ALL professional certifications
+5. Handle various name formats:
+   - ALL CAPS: "JOHN SMITH" → "JOHN"
+   - Mixed case: "John Smith" → "John"
+   - With titles: "Mr. John Smith" → "John"
+   - With middle names: "John Robert Smith" → "John"
+6. Preserve:
+   - All HTML formatting and structure
+   - Professional titles and credentials
+   - Company names
+   - Educational institution names
+
+IMPORTANT: Return only raw HTML without any markdown code blocks or syntax highlighting.`;
     
     return this.getCompletion(prompt);
   }
@@ -166,7 +166,7 @@ Do not include any explanatory text in your response - return only the processed
   async reformatCV(cvContent: string): Promise<string> {
     const prompt = `Reformat this CV HTML into a clean, professional layout:
 
-    ${cvContent}
+${cvContent}
 
     Requirements:
     1. Structure the content with clear sections:
@@ -205,15 +205,15 @@ Do not include any explanatory text in your response - return only the processed
        - Use <p> for paragraphs
        - Add appropriate class names for styling
 
-    Return the complete HTML with improved formatting and structure ONLY.`;
+    IMPORTANT: Return only raw HTML without any markdown code blocks or syntax highlighting.`;
 
     return this.getCompletion(prompt);
   }
 
   async enhanceCV(cvContent: string): Promise<string> {
-    const prompt = `Enhance this CV's content while maintaining exact structure:
+    const prompt = `Enhance this CV content while preserving the HTML structure:
 
-    ${cvContent}
+${cvContent}
 
     STRICT Requirements:
     1. DO NOT MODIFY under any circumstances:
@@ -238,7 +238,7 @@ Do not include any explanatory text in your response - return only the processed
        - Keep all HTML formatting intact
        - Ensure first name remains in <h1> at top
 
-    Return the enhanced CV with improved descriptions ONLY, keeping all company names and positions exactly as in the original.`;
+IMPORTANT: Return only raw HTML without any markdown code blocks or syntax highlighting.`;
 
     return this.getCompletion(prompt);
   }
