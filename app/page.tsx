@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { downloadAsPDF } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { ActionButtons } from "@/components/ActionButtons";
 
 interface ParsedResult {
   originalContent: string;
@@ -369,26 +370,15 @@ export default function Home() {
             )}
 
             {parsedCV && activeTab === 'enhanced' && (
-              <div className="flex justify-end gap-2 mt-2 mb-4">
-                <Button
-                  onClick={handleJobMatch}
-                  variant="default"
-                  className="gap-2 bg-black hover:bg-black/90"
-                >
-                  {isLoadingJobs ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Finding matches...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="h-4 w-4" />
-                      AI Job Matcher
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={async () => {
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <ActionButtons
+                  handleJobMatch={handleJobMatch}
+                  handleCareerPlan={handleCareerPlan}
+                  handleDownloadPDF={async () => {
                     if (!parsedCV) return;
                     try {
                       setIsGeneratingPDF(true);
@@ -411,39 +401,11 @@ export default function Home() {
                       setIsGeneratingPDF(false);
                     }
                   }}
-                  disabled={isGeneratingPDF}
-                  className="gap-2 bg-black hover:bg-black/90"
-                >
-                  {isGeneratingPDF ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="h-4 w-4" />
-                      Download PDF
-                    </>
-                  )}
-                </Button>
-                <Button
-                  onClick={handleCareerPlan}
-                  variant="default"
-                  className="gap-2 bg-black hover:bg-black/90"
-                >
-                  {isLoadingCareer ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Analyzing career path...
-                    </>
-                  ) : (
-                    <>
-                      <GraduationCap className="h-4 w-4" />
-                      Career Progression Plan
-                    </>
-                  )}
-                </Button>
-              </div>
+                  isLoadingJobs={isLoadingJobs}
+                  isLoadingCareer={isLoadingCareer}
+                  isGeneratingPDF={isGeneratingPDF}
+                />
+              </motion.div>
             )}
           </div>
         </DialogContent>
