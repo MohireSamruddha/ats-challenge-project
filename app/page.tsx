@@ -279,8 +279,8 @@ export default function Home() {
       </div>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="max-w-4xl max-h-[80vh]">
-          <div className="dialog-container">
+        <DialogContent className="max-w-4xl max-h-[80vh] mx-auto">
+          <div className="dialog-container flex flex-col items-center">
             <DialogHeader>
               <DialogTitle>CV Preview</DialogTitle>
             </DialogHeader>
