@@ -66,19 +66,21 @@ export default function Home() {
       
       setProcessingStatus('formatting');
       toast.info("Reformatting CV structure...");
-      let formattedContent = await agent.reformatCV(anonymizedContent);
-      formattedContent = agent.getFormattingCSS() + formattedContent;
+      const formattedContent = await agent.reformatCV(anonymizedContent);
       
       setProcessingStatus('enhancing');
       toast.info("Enhancing CV content...");
       const enhancedContent = await agent.enhanceCV(formattedContent);
       
+      // Add CSS only once at the end
+      const cssStyle = agent.getFormattingCSS();
+      
       // Update the parsed result
       setParsedCV({
         originalContent: initialParsed.html,
         anonymizedContent,
-        formattedContent,
-        enhancedContent
+        formattedContent: cssStyle + formattedContent,
+        enhancedContent: cssStyle + enhancedContent
       });
 
       setProcessingStatus('complete');

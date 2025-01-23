@@ -176,11 +176,19 @@ Do not include any explanatory text in your response - return only the processed
        - KEY SKILLS
        - EDUCATION
        - CERTIFICATIONS (if any)
+       - Format job entries as:
+       <div class="job-header">
+         <div class="job-title">Company Name | Position</div>
+         <div class="date">YYYY - YYYY</div>
+       </div>
+    
+    2. Example format:
+       ZMS Electrical | Electrician                         2022 - 2023  
 
-    2. CRITICAL - DO NOT MODIFY:
+    3. CRITICAL - DO NOT MODIFY:
        - Company names must remain EXACTLY as in original
        - Job titles must remain EXACTLY as in original
-       - Dates and durations
+       - Dates must remain in YYYY-YYYY format
        - Educational institutions
        - Certifications
 
@@ -232,42 +240,65 @@ Do not include any explanatory text in your response - return only the processed
     return this.getCompletion(prompt);
   }
 
-  private getFormattingCSS(): string {
-    return `
-      <style>
-        .cv-section {
-          margin-bottom: 1.5em;
-        }
-        .cv-section h2 {
-          font-size: 1.2em;
-          font-weight: bold;
-          margin-bottom: 1em;
-          border-bottom: 1px solid #ccc;
-        }
-        .job-entry {
-          margin-bottom: 1em;
-        }
-        .job-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.5em;
-        }
-        .date {
-          color: #666;
-        }
-        .job-details {
-          margin-left: 1.5em;
-        }
-        ul {
-          list-style-type: disc;
-          margin-left: 1.2em;
-        }
-        li {
-          margin-bottom: 0.3em;
-        }
-      </style>
-    `;
+  getFormattingCSS(): string {
+    return `<style>
+      body {
+        font-family: Arial, sans-serif;
+        color: #333;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f9f9f9;
+      }
+      .cv-section {
+        margin: 1.5em 2em;
+        padding: 1em;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .cv-section h2 {
+        font-size: 1.5em;
+        font-weight: bold;
+        margin-bottom: 1em;
+        color: #555;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 0.3em;
+      }
+      .job-entry {
+        margin-bottom: 1.5em;
+      }
+      .job-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1em;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.5em;
+      }
+      .date {
+        color: #666;
+        font-size: 0.9em;
+      }
+      .job-details {
+        margin-left: 1.5em;
+      }
+      ul {
+        list-style-type: circle;
+        margin-left: 1.5em;
+      }
+      li {
+        margin-bottom: 0.4em;
+      }
+      .job-title {
+        font-size: 1.1em;
+        color: #333;
+      }
+      .job-title span {
+        font-weight: normal;
+        color: #666;
+      }
+    </style>`;
   }
 
   async processCVWithSteps(cvContent: string): Promise<{
