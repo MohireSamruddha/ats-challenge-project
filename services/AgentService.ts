@@ -16,26 +16,31 @@ export class CVAgent {
     // Initialize with system message defining the agent's capabilities
     this.conversation.push({
       role: "system",
-      content: `Expert CV processor with multiple capabilities:
+      content: `Expert CV processor with strict anonymization rules:
+
 1. Anonymization:
-- Remove only last names while preserving first names
-- Keep other personal information intact
+   - Keep ONLY first names
+   - Remove ALL last names, middle names, family names
+   - Remove emails and social media
+   - Handle names in any format or case
+   - Preserve professional titles and credentials
+   - Keep company and institution names intact
 
 2. Formatting:
-- Organize content into clear sections
-- Apply consistent heading styles
-- Structure bullet points uniformly
-- Maintain clean spacing
-- Preserve semantic HTML
+   - Organize content into clear sections
+   - Apply consistent heading styles
+   - Structure bullet points uniformly
+   - Maintain clean spacing
+   - Preserve semantic HTML
 
 3. Enhancement:
-- Improve language clarity
-- Strengthen impact of achievements
-- Use active voice
-- Maintain professional tone
-- Keep factual content unchanged
+   - Improve language clarity
+   - Strengthen impact of achievements
+   - Use active voice
+   - Maintain professional tone
+   - Keep factual content unchanged
 
-  Do not include any explanatory text in your response - return only the processed HTML.`
+Do not include any explanatory text in your response - return only the processed HTML.`
     });
   }
 
@@ -124,15 +129,28 @@ export class CVAgent {
   }
 
   async anonymizeLastNames(cvContent: string): Promise<string> {
-    const prompt = `Remove ONLY last names from this CV, preserving all HTML formatting and other content exactly as is. Keep first names intact:
+    const prompt = `Anonymize this CV by removing personally identifiable information while keeping the first name:
+
     ${cvContent}
 
-    Rules:
-    1. Only remove last names
-    2. Keep first names
-    3. Preserve all HTML tags and structure
-    4. Don't modify any other content
-    5. Don't change formatting`;
+    Strict anonymization rules:
+    1. Remove ALL last names, middle names, and family names
+    2. Keep ONLY the first name
+    3. Remove
+       - email addresses
+       - social media handles
+    4. Handle various name formats:
+       - ALL CAPS: "JOHN SMITH" → "JOHN"
+       - Mixed case: "John Smith" → "John"
+       - With titles: "Mr. John Smith" → "John"
+       - With middle names: "John Robert Smith" → "John"
+    5. Preserve:
+       - All HTML formatting and structure
+       - Professional titles and credentials
+       - Company names
+       - Educational institution names
+    
+    Return ONLY the anonymized HTML with no explanations.`;
     
     return this.getCompletion(prompt);
   }
@@ -144,6 +162,7 @@ export class CVAgent {
 
     Requirements:
     1. Structure the content with clear sections:
+       - Keep first names
        - WORK HISTORY/EXPERIENCE (with dates right-aligned)
        - CAREER OBJECTIVE/SUMMARY
        - KEY SKILLS
@@ -195,12 +214,13 @@ export class CVAgent {
     ${cvContent}
 
     Requirements:
-    1. Use strong action verbs
-    2. Quantify achievements where possible
-    3. Maintain professional tone
-    4. Keep all HTML tags and attributes unchanged
-    5. Preserve all positioning and styling
-    6. Only modify text content within elements
+    1. Keep first names
+    2. Use strong action verbs
+    3. Quantify achievements where possible
+    4. Maintain professional tone
+    5. Keep all HTML tags and attributes unchanged
+    6. Preserve all positioning and styling
+    7. Only modify text content within elements
     7.Return the enhanced CV content with improved language and quantified achievements.
     8. Focus on:
        - Clear accomplishments
@@ -263,8 +283,9 @@ export class CVAgent {
     let formattedContent = await this.reformatCV(anonymizedContent);
     formattedContent = this.getFormattingCSS() + formattedContent;
     
-    // Step 3: Enhance
-    const enhancedContent = await this.enhanceCV(formattedContent);
+    // Step 3: Enhance with same formatting
+    let enhancedContent = await this.enhanceCV(anonymizedContent);
+    enhancedContent = this.getFormattingCSS() + enhancedContent;
     
     return {
       originalContent: cvContent,

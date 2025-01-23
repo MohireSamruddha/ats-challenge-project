@@ -28,6 +28,9 @@ export default function Home() {
   const [showDialog, setShowDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeStep, setActiveStep] = useState<'original' | 'anonymized' | 'formatted' | 'enhanced'>('original');
+  const [processingStatus, setProcessingStatus] = useState<
+    'idle' | 'parsing' | 'anonymizing' | 'formatting' | 'enhancing' | 'complete'
+  >('idle');
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -45,9 +48,11 @@ export default function Home() {
     setShowDialog(true);
     setIsProcessing(true);
     setError(null);
+    setProcessingStatus('parsing');
 
     try {
       // First parse the CV
+      toast.info("Parsing CV file...");
       const parser = new CVParser();
       const initialParsed = await parser.parse(file);
       
@@ -55,21 +60,34 @@ export default function Home() {
       const agent = new CVAgent();
       
       // Process the CV with agent steps
-      const processedResult = await agent.processCVWithSteps(initialParsed.html);
+      setProcessingStatus('anonymizing');
+      toast.info("Anonymizing CV...");
+      const anonymizedContent = await agent.anonymizeLastNames(initialParsed.html);
       
-      // Update the parsed result with anonymized content
+      setProcessingStatus('formatting');
+      toast.info("Reformatting CV structure...");
+      let formattedContent = await agent.reformatCV(anonymizedContent);
+      formattedContent = agent.getFormattingCSS() + formattedContent;
+      
+      setProcessingStatus('enhancing');
+      toast.info("Enhancing CV content...");
+      const enhancedContent = await agent.enhanceCV(formattedContent);
+      
+      // Update the parsed result
       setParsedCV({
         originalContent: initialParsed.html,
-        anonymizedContent: processedResult.anonymizedContent,
-        formattedContent: processedResult.formattedContent,
-        enhancedContent: processedResult.enhancedContent
+        anonymizedContent,
+        formattedContent,
+        enhancedContent
       });
 
+      setProcessingStatus('complete');
       toast.success("CV processed successfully!");
     } catch (error) {
       console.error('Error processing CV:', error);
       setError('Failed to process the CV. Please try again.');
       toast.error("Failed to process CV");
+      setProcessingStatus('idle');
     } finally {
       setIsProcessing(false);
     }
@@ -135,7 +153,13 @@ export default function Home() {
           {isProcessing ? (
             <div className="flex flex-col items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin" />
-              <p className="mt-4 text-sm text-muted-foreground">Processing your CV...</p>
+              <p className="mt-4 text-sm text-muted-foreground">
+                {processingStatus === 'parsing' && "Parsing CV..."}
+                {processingStatus === 'anonymizing' && "Anonymizing CV..."}
+                {processingStatus === 'formatting' && "Reformatting CV..."}
+                {processingStatus === 'enhancing' && "Enhancing CV..."}
+                {processingStatus === 'complete' && "Finalizing..."}
+              </p>
             </div>
           ) : error ? (
             <div className="text-center py-8">
