@@ -126,17 +126,17 @@ export default function Home() {
   console.log('Current parsedCV state:', parsedCV);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted flex items-center justify-center">
       {/* Hero Section */}
-      <div className="relative isolate px-6 pt-14 lg:px-8">
+      <div className="relative isolate px-6">
         <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
           <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
         </div>
         
-        <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
+        <div className="mx-auto max-w-2xl">
           <div className="text-center">
             <motion.h1 
-              className="text-4xl font-bold tracking-tight sm:text-6xl mb-8 bg-gradient-to-r from-primary to-purple-600 text-transparent bg-clip-text"
+              className="text-3xl font-bold tracking-tight sm:text-5xl mb-4 bg-gradient-to-r from-primary to-purple-600 text-transparent bg-clip-text"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -144,7 +144,7 @@ export default function Home() {
               AI-Powered CV Assistant
             </motion.h1>
             <motion.p 
-              className="text-lg leading-8 text-muted-foreground mb-12"
+              className="text-base leading-7 text-muted-foreground mb-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -153,41 +153,41 @@ export default function Home() {
             </motion.p>
 
             {/* Feature Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <motion.div 
-                className="p-6 rounded-lg bg-card"
+                className="p-4 rounded-lg bg-card"
                 whileHover={{ scale: 1.05 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <Shield className="w-12 h-12 mb-4 mx-auto text-primary" />
-                <h3 className="text-lg font-semibold mb-2">Privacy First</h3>
-                <p className="text-sm text-muted-foreground">Secure anonymization of personal information</p>
+                <Shield className="w-8 h-8 mb-2 mx-auto text-primary" />
+                <h3 className="text-base font-semibold mb-1">Privacy First</h3>
+                <p className="text-xs text-muted-foreground">Secure anonymization of personal information</p>
               </motion.div>
 
               <motion.div 
-                className="p-6 rounded-lg bg-card"
+                className="p-4 rounded-lg bg-card"
                 whileHover={{ scale: 1.05 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
               >
-                <Sparkles className="w-12 h-12 mb-4 mx-auto text-primary" />
-                <h3 className="text-lg font-semibold mb-2">AI Enhancement</h3>
-                <p className="text-sm text-muted-foreground">Smart content improvements and formatting</p>
+                <Sparkles className="w-8 h-8 mb-2 mx-auto text-primary" />
+                <h3 className="text-base font-semibold mb-1">AI Enhancement</h3>
+                <p className="text-xs text-muted-foreground">Smart content improvements and formatting</p>
               </motion.div>
 
               <motion.div 
-                className="p-6 rounded-lg bg-card"
+                className="p-4 rounded-lg bg-card"
                 whileHover={{ scale: 1.05 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
-                <FileText className="w-12 h-12 mb-4 mx-auto text-primary" />
-                <h3 className="text-lg font-semibold mb-2">Professional Format</h3>
-                <p className="text-sm text-muted-foreground">Clean, ATS-friendly layout</p>
+                <FileText className="w-8 h-8 mb-2 mx-auto text-primary" />
+                <h3 className="text-base font-semibold mb-1">Professional Format</h3>
+                <p className="text-xs text-muted-foreground">Clean, ATS-friendly layout</p>
               </motion.div>
             </div>
 
@@ -198,16 +198,16 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              <div className="flex flex-col items-center gap-4">
+              <div className="flex flex-col items-center gap-3">
                 <Button
                   variant="outline"
                   asChild
-                  className="h-32 w-full border-dashed border-2 hover:border-primary hover:bg-muted/50"
+                  className="h-24 w-full border-dashed border-2 hover:border-primary hover:bg-muted/50"
                 >
-                  <label htmlFor="cv-upload" className="cursor-pointer flex flex-col items-center justify-center gap-2">
-                    <Upload className="w-8 h-8 text-muted-foreground" />
-                    <span className="font-medium">{file ? file.name : 'Choose a file'}</span>
-                    <span className="text-sm text-muted-foreground">
+                  <label htmlFor="cv-upload" className="cursor-pointer flex flex-col items-center justify-center gap-1">
+                    <Upload className="w-6 h-6 text-muted-foreground" />
+                    <span className="font-medium text-sm">{file ? file.name : 'Choose a file'}</span>
+                    <span className="text-xs text-muted-foreground">
                       Drag & drop or click to upload
                     </span>
                   </label>
@@ -219,7 +219,7 @@ export default function Home() {
                   onChange={handleFileUpload}
                   className="hidden"
                 />
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Supported formats: PDF, DOCX
                 </p>
                 {file && (
