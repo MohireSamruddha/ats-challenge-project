@@ -13,12 +13,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { CVAgent } from "@/services/AgentService";
 import { toast } from "sonner";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 interface ParsedResult {
   originalContent: string;
   anonymizedContent: string;
   formattedContent: string;
   enhancedContent: string;
+  editedContent?: string;
 }
 
 export default function Home() {
@@ -31,6 +33,7 @@ export default function Home() {
   const [processingStatus, setProcessingStatus] = useState<
     'idle' | 'parsing' | 'anonymizing' | 'formatting' | 'enhancing' | 'complete'
   >('idle');
+  const [editedCV, setEditedCV] = useState<string | null>(null);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const uploadedFile = event.target.files?.[0];
@@ -169,11 +172,12 @@ export default function Home() {
             </div>
           ) : parsedCV ? (
             <Tabs defaultValue="original" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="original">Original</TabsTrigger>
                 <TabsTrigger value="anonymized">Anonymized</TabsTrigger>
                 <TabsTrigger value="formatted">Formatted</TabsTrigger>
                 <TabsTrigger value="enhanced">Enhanced</TabsTrigger>
+                <TabsTrigger value="edit">Edit</TabsTrigger>
               </TabsList>
               
               <TabsContent value="original">
@@ -208,6 +212,15 @@ export default function Home() {
                   <div 
                     className="prose max-w-none"
                     dangerouslySetInnerHTML={{ __html: parsedCV.enhancedContent }}
+                  />
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="edit">
+                <div className="border rounded-lg p-4 overflow-y-auto max-h-[60vh]">
+                  <RichTextEditor
+                    initialContent={editedCV || parsedCV.enhancedContent}
+                    onChange={(html) => setEditedCV(html)}
                   />
                 </div>
               </TabsContent>

@@ -147,3 +147,115 @@ body {
   max-height: 80vh;
   overflow-y: auto;
 }
+
+/* Add these styles */
+.preserve-formatting {
+  white-space: pre-wrap;
+}
+
+.preserve-formatting [class^="cv-"] {
+  /* Preserve CV-specific classes */
+  all: revert;
+}
+
+.preserve-formatting .job-header,
+.preserve-formatting .job-title,
+.preserve-formatting .date,
+.preserve-formatting .cv-section {
+  /* Preserve specific CV formatting classes */
+  display: inherit;
+  margin: inherit;
+  padding: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+.tiptap .cv-name {
+  /* Preserve CV name styling */
+  font-size: 2.5em;
+  font-weight: bold;
+  text-align: center;
+  margin: 1em 0;
+  color: #222;
+}
+
+/* Add these rules */
+.ProseMirror .job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5em;
+}
+
+.ProseMirror .job-title {
+  font-size: 1.1em;
+  color: #333;
+}
+
+.ProseMirror .date {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.ProseMirror .cv-section {
+  margin: 1.5em 0;
+  padding: 1em;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ProseMirror .cv-section h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-bottom: 1em;
+  color: #555;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.3em;
+}
+
+.ProseMirror ul {
+  list-style-type: circle;
+  margin-left: 1.5em;
+}
+
+.ProseMirror li {
+  margin-bottom: 0.4em;
+}
+
+/* Add to app/globals.css */
+.tiptap .job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 0.5em;
+}
+
+.tiptap .job-title {
+  font-size: 1.1em;
+  color: #333;
+}
+
+.tiptap .date {
+  color: #666;
+  font-size: 0.9em;
+}
+
+/* Ensure consistent spacing */
+.tiptap p {
+  margin: 0.5em 0;
+}
+
+.tiptap ul {
+  margin-left: 1.5em;
+  list-style-type: circle;
+}
+
+.tiptap li {
+  margin-bottom: 0.4em;
+}
