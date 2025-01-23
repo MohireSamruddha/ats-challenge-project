@@ -170,7 +170,7 @@ Do not include any explanatory text in your response - return only the processed
 
     Requirements:
     1. Structure the content with clear sections:
-       - Keep first names
+       - Add first name at the top in <h1 class="cv-name">First Name</h1>
        - WORK HISTORY/EXPERIENCE (with dates right-aligned)
        - CAREER OBJECTIVE/SUMMARY
        - KEY SKILLS
@@ -183,7 +183,8 @@ Do not include any explanatory text in your response - return only the processed
        </div>
     
     2. Example format:
-       ZMS Electrical | Electrician                         2022 - 2023  
+       <h1 class="cv-name">John</h1>
+       ZMS Electrical | Electrician                         2022 - 2023
 
     3. CRITICAL - DO NOT MODIFY:
        - Company names must remain EXACTLY as in original
@@ -216,6 +217,7 @@ Do not include any explanatory text in your response - return only the processed
 
     STRICT Requirements:
     1. DO NOT MODIFY under any circumstances:
+       - First name at the top (<h1 class="cv-name">)
        - Company names (keep exactly as is)
        - Job titles (keep exactly as is)
        - Organization names
@@ -234,6 +236,7 @@ Do not include any explanatory text in your response - return only the processed
        - Quantify achievements where possible
        - Maintain professional tone
        - Keep all HTML formatting intact
+       - Ensure first name remains in <h1> at top
 
     Return the enhanced CV with improved descriptions ONLY, keeping all company names and positions exactly as in the original.`;
 
@@ -249,6 +252,13 @@ Do not include any explanatory text in your response - return only the processed
         margin: 0;
         padding: 0;
         background-color: #f9f9f9;
+      }
+      .cv-name {
+        font-size: 2.5em;
+        font-weight: bold;
+        text-align: center;
+        margin: 1em 0;
+        color: #222;
       }
       .cv-section {
         margin: 1.5em 2em;
