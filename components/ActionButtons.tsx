@@ -61,6 +61,31 @@ export function ActionButtons({
         whileTap="tap"
       >
         <Button
+          onClick={handleCareerPlan}
+          variant="default"
+          className="w-full bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 shadow-lg hover:shadow-green-500/50 transition-all duration-200"
+        >
+          {isLoadingCareer ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Analyzing path...</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <GraduationCap className="h-4 w-4" />
+              <span>AI Career Plan</span>
+            </div>
+          )}
+        </Button>
+      </motion.div>
+
+      <motion.div 
+        className="flex-1"
+        variants={buttonVariants}
+        whileHover="hover"
+        whileTap="tap"
+      >
+        <Button
           onClick={handleDownloadPDF}
           variant="default"
           className="w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 shadow-lg hover:shadow-purple-500/50 transition-all duration-200"
@@ -74,31 +99,6 @@ export function ActionButtons({
             <div className="flex items-center gap-2">
               <Download className="h-4 w-4" />
               <span>Download PDF</span>
-            </div>
-          )}
-        </Button>
-      </motion.div>
-
-      <motion.div 
-        className="flex-1"
-        variants={buttonVariants}
-        whileHover="hover"
-        whileTap="tap"
-      >
-        <Button
-          onClick={handleCareerPlan}
-          variant="default"
-          className="w-full bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 shadow-lg hover:shadow-green-500/50 transition-all duration-200"
-        >
-          {isLoadingCareer ? (
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Analyzing path...</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              <span>Career Plan</span>
             </div>
           )}
         </Button>
