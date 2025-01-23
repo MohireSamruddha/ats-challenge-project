@@ -136,10 +136,18 @@ Do not include any explanatory text in your response - return only the processed
     Strict anonymization rules:
     1. Remove ALL last names, middle names, and family names
     2. Keep ONLY the first name
-    3. Remove
+    3. Remove:
        - email addresses
        - social media handles
-    4. Handle various name formats:
+       - phone numbers
+       - addresses
+    4. IMPORTANT: Preserve exactly as is:
+       - ALL company names
+       - ALL organization names
+       - ALL educational institution names
+       - ALL job titles
+       - ALL professional certifications
+    5. Handle various name formats:
        - ALL CAPS: "JOHN SMITH" → "JOHN"
        - Mixed case: "John Smith" → "John"
        - With titles: "Mr. John Smith" → "John"
@@ -169,41 +177,26 @@ Do not include any explanatory text in your response - return only the processed
        - EDUCATION
        - CERTIFICATIONS (if any)
 
-    2. Formatting rules:
-       - Use consistent heading styles (<h2> for main sections)
-       - Create proper spacing between sections (margin-bottom: 1.5em)
-       - Align dates to the right using <span class="date">
-       - Use bullet points for skills and experiences
-       - Maintain clean paragraph spacing
-       - Ensure job titles and companies are bold
+    2. CRITICAL - DO NOT MODIFY:
+       - Company names must remain EXACTLY as in original
+       - Job titles must remain EXACTLY as in original
+       - Dates and durations
+       - Educational institutions
+       - Certifications
 
-    3. HTML structure:
+    3. Only modify:
+       - HTML structure and formatting
+       - Section organization
+       - Spacing and layout
+       - List formatting
+
+    4. HTML structure:
        - Wrap each section in <section class="cv-section">
        - Use <ul> and <li> for lists
        - Use <p> for paragraphs
        - Add appropriate class names for styling
 
-    4. Example structure:
-       <section class="cv-section">
-         <h2>WORK HISTORY</h2>
-         <div class="job-entry">
-           <div class="job-header">
-             <strong>Job Title</strong>
-             <span class="date">2022-2023</span>
-           </div>
-           <ul class="job-details">
-             <li>Achievement or responsibility</li>
-           </ul>
-         </div>
-       </section>
-
-    5. Critical requirements:
-       - Preserve all content exactly as is
-       - Maintain any existing styling attributes
-       - Keep all positioning information intact
-       - Only reorganize the structure within elements
-
-    Return the complete HTML with improved formatting and structure.`;
+    Return the complete HTML with improved formatting and structure ONLY.`;
 
     return this.getCompletion(prompt);
   }
@@ -213,21 +206,28 @@ Do not include any explanatory text in your response - return only the processed
 
     ${cvContent}
 
-    Requirements:
-    1. Keep first names
-    2. Use strong action verbs
-    3. Quantify achievements where possible
-    4. Maintain professional tone
-    5. Keep all HTML tags and attributes unchanged
-    6. Preserve all positioning and styling
-    7. Only modify text content within elements
-    7.Return the enhanced CV content with improved language and quantified achievements.
-    8. Focus on:
-       - Clear accomplishments
-       - Technical skills
-       - Professional experience
-       - Educational background
-    9. Return complete HTML with enhanced content`;
+    STRICT Requirements:
+    1. DO NOT MODIFY under any circumstances:
+       - Company names (keep exactly as is)
+       - Job titles (keep exactly as is)
+       - Organization names
+       - Dates and durations
+       - Educational institutions
+       - Certification names
+
+    2. Only enhance:
+       - Achievement descriptions
+       - Skill descriptions
+       - Summary/objective statements
+       - Responsibility descriptions (while keeping core meaning)
+
+    3. Enhancement guidelines:
+       - Use strong action verbs
+       - Quantify achievements where possible
+       - Maintain professional tone
+       - Keep all HTML formatting intact
+
+    Return the enhanced CV with improved descriptions ONLY, keeping all company names and positions exactly as in the original.`;
 
     return this.getCompletion(prompt);
   }
@@ -276,15 +276,18 @@ Do not include any explanatory text in your response - return only the processed
     formattedContent: string;
     enhancedContent: string;
   }> {
-    // Step 1: Anonymize
+    // Step 1: Anonymize the CV content first
     const anonymizedContent = await this.anonymizeLastNames(cvContent);
+    console.log('Anonymization complete');
     
-    // Step 2: Reformat and add CSS
+    // Step 2: Reformat the anonymized content
     let formattedContent = await this.reformatCV(anonymizedContent);
+    console.log('Reformatting complete');
     formattedContent = this.getFormattingCSS() + formattedContent;
     
-    // Step 3: Enhance with same formatting
-    let enhancedContent = await this.enhanceCV(anonymizedContent);
+    // Step 3: Enhance the formatted content
+    let enhancedContent = await this.enhanceCV(formattedContent);
+    console.log('Enhancement complete');
     enhancedContent = this.getFormattingCSS() + enhancedContent;
     
     return {
