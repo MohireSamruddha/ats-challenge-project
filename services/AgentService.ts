@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { Loader2, Download, Search, Upload, Sparkles, Shield, FileText, GraduationCap } from "lucide-react";
 
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -72,8 +71,8 @@ IMPORTANT: Return only raw HTML without any markdown code blocks or syntax highl
       const response = completion.choices[0].message.content || "";
       this.conversation.push({ role: "assistant", content: response });
       return response;
-    } catch (error: any) {
-      if (typeof error.message === 'string' && error.message.includes('maximum context length')) {
+    } catch (error: Error | unknown) {
+      if (error instanceof Error && error.message.includes('maximum context length')) {
         // Process in smaller chunks
         const chunks = this.splitContentIntoChunks(cleanedPrompt, 2000);
         let combinedResponse = '';

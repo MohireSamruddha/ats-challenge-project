@@ -9,7 +9,7 @@ describe('CVAgent', () => {
       default: class MockOpenAI {
         chat = {
           completions: {
-            create: async ({ messages }: { messages: any[] }) => {
+            create: async ({ messages }: { messages: { role: string; content: string }[] }) => {
               const lastMessage = messages[messages.length - 1];
               
               if (lastMessage.content.includes('Anonymize this CV')) {

@@ -1,8 +1,16 @@
 import { CVParser } from '@/services/CVParser';
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
 
+interface MockWindow {
+  TextDecoder: typeof TextDecoder;
+  Worker: typeof Worker;
+  URL: {
+    createObjectURL: (blob: Blob) => string;
+  };
+}
+
 describe('CVParser', () => {
-  let mockWindow: any;
+  let mockWindow: MockWindow;
 
   beforeEach(() => {
     mockWindow = {
@@ -12,16 +20,16 @@ describe('CVParser', () => {
         createObjectURL: () => 'mock-url'
       }
     };
-    global.window = mockWindow;
+    global.window = mockWindow as unknown as typeof window;
   });
 
   afterEach(() => {
-    global.window = undefined;
+    global.window = undefined as unknown as typeof window;
   });
 
   test('should throw error when parsing on server side', async () => {
     const file = new File(['test content'], 'test.pdf', { type: 'application/pdf' });
-    global.window = undefined;
+    global.window = undefined as unknown as typeof window;
     
     await expect(CVParser.parseFile(file)).rejects.toThrow('File parsing must be done on client side');
   });
