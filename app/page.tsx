@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { CVParser } from "@/services/CVParser";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Download, Search, Upload, Sparkles, Shield, FileText, GraduationCap } from "lucide-react";
+import { Loader2, GraduationCap } from "lucide-react";
 import { CVAgent } from "@/services/AgentService";
 import { toast } from "sonner";
 import { RichTextEditor } from "@/components/RichTextEditor";
