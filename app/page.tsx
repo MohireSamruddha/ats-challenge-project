@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2, GraduationCap, Shield, Sparkles, FileText, Upload } from "lucide-react";
 import { CVAgent } from "@/services/AgentService";
 import { toast } from "sonner";
-import { RichTextEditor } from "@/components/RichTextEditor";
+import { RichTextEditor } from "@/components/Editors";
 import { downloadAsPDF } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { ActionButtons } from "@/components/ActionButtons";
