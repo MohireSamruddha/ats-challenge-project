@@ -18,21 +18,8 @@ interface ParsedCV {
 }
 
 export class CVParser {
-  async parse(file: File): Promise<ParsedResult> {
+  async parse(file: File): Promise<ParsedCV> {
     return CVParser.parseFile(file);
-  }
-
-  private async parsePDF(file: File) {
-    // Implement PDF parsing logic
-    // You might want to use pdf.js or similar library
-  }
-
-  private async parseDocx(file: File) {
-    const buffer = await file.arrayBuffer();
-    const [textResult, htmlResult] = await Promise.all([
-      mammoth.extractRawText({ arrayBuffer: buffer }),  // Gets plain text
-      mammoth.convertToHtml({ arrayBuffer: buffer })    // Gets HTML
-    ]);
   }
 
   static async parseFile(file: File): Promise<ParsedCV> {

@@ -1,4 +1,4 @@
-import { Editor, EditorContent, useEditor } from '@tiptap/react'
+import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
@@ -9,7 +9,7 @@ import html2pdf from 'html2pdf.js'
 
 interface RichTextEditorProps {
   initialContent: string;
-  onChange?: (html: string) => void;
+  onChange?: (_html: string) => void;
 }
 
 export function RichTextEditor({ initialContent, onChange }: RichTextEditorProps): JSX.Element {

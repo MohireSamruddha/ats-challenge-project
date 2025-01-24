@@ -5,7 +5,7 @@ interface MockWindow {
   TextDecoder: typeof TextDecoder;
   Worker: typeof Worker;
   URL: {
-    createObjectURL: (blob: Blob) => string;
+    createObjectURL: () => string;
   };
 }
 

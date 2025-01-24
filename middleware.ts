@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function middleware(_request: NextRequest) {
   try {
     // Add request validation and error handling here
     return NextResponse.next();
@@ -12,4 +12,4 @@ export function middleware(request: NextRequest) {
       { status: 500, headers: { 'content-type': 'application/json' } }
     );
   }
-} 
+}

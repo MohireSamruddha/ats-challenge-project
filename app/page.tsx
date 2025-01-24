@@ -32,7 +32,6 @@ export default function Home() {
   const [parsedCV, setParsedCV] = useState<ParsedResult | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeStep, setActiveStep] = useState<'original' | 'anonymized' | 'formatted' | 'enhanced'>('original');
   const [processingStatus, setProcessingStatus] = useState<
     'idle' | 'parsing' | 'anonymizing' | 'formatting' | 'enhancing' | 'complete'
   >('idle');

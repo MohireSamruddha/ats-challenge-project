@@ -7,5 +7,5 @@ declare module 'mammoth/mammoth.browser' {
     value: string;
   }
 
-  export function extractRawText(options: MammothOptions): Promise<MammothResult>;
+  export function extractRawText(_options: MammothOptions): Promise<MammothResult>;
 } 
