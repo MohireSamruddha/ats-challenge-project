@@ -8,4 +8,5 @@ declare module 'mammoth/mammoth.browser' {
   }
 
   export function extractRawText(_options: MammothOptions): Promise<MammothResult>;
+  export function convertToHtml(_options: MammothOptions): Promise<MammothResult>;
 } 
