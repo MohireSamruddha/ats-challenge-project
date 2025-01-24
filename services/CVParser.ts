@@ -3,12 +3,11 @@
 import { PDFDocumentProxy } from 'pdfjs-dist/types/src/display/api';
 import { TextItem } from 'pdfjs-dist/types/src/display/api';
 import mammoth from 'mammoth/mammoth.browser';
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+import * as pdfjsLib from 'pdfjs-dist';
+import { GlobalWorkerOptions } from 'pdfjs-dist';
 
-// Initialize PDF.js worker
 if (typeof window !== 'undefined') {
-  const worker = new Worker(new URL('pdfjs-dist/legacy/build/pdf.worker.js', import.meta.url));
-  pdfjsLib.GlobalWorkerOptions.workerPort = worker;
+  GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 }
 
 interface ParsedCV {

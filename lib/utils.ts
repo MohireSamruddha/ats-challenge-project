@@ -1,16 +1,17 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import html2pdf from 'html2pdf.js';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export async function downloadAsPDF(content: string, firstName: string) {
+// Separate the PDF functionality into a new file
+export const downloadAsPDF = async (content: string, firstName: string) => {
+  const html2pdf = (await import('html2pdf.js')).default;
+  
   // Create a temporary container
   const container = document.createElement('div');
   
-  // Add both the CSS and content
   const cssStyle = `
     <style>
       @page {
@@ -64,7 +65,6 @@ export async function downloadAsPDF(content: string, firstName: string) {
     </style>
   `;
   
-  // Wrap content in a container div
   const wrappedContent = `
     <div class="pdf-container">
       ${content}
@@ -82,11 +82,11 @@ export async function downloadAsPDF(content: string, firstName: string) {
       useCORS: true,
       logging: false,
       scrollY: -window.scrollY,
-      windowWidth: 794, // A4 width in pixels at 96 DPI
+      windowWidth: 794,
       windowHeight: 1123,
-      onclone: (clonedDoc) => {
+      onclone: (clonedDoc: Document) => {
         const element = clonedDoc.querySelector('.pdf-container');
-        if (element) {
+        if (element instanceof HTMLElement) {
           element.style.transform = 'none';
           element.style.width = '210mm';
           element.style.minHeight = '297mm';
@@ -112,4 +112,4 @@ export async function downloadAsPDF(content: string, firstName: string) {
   } finally {
     document.body.removeChild(container);
   }
-}
+};
